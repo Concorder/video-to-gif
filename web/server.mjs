@@ -10,6 +10,8 @@ const root=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const storage=await mkdtemp(path.join(tmpdir(),'cliptext-'));
 const app=express(); const clips=new Map();
 const upload=multer({dest:storage,limits:{fileSize:250*1024*1024,files:1}});
+app.use((req,res,next)=>{const origin=req.get('Origin');const allowed=(process.env.ALLOWED_ORIGINS||'https://concorder.github.io').split(',');if(origin&&allowed.includes(origin)){res.set('Access-Control-Allow-Origin',origin);res.vary('Origin');res.set('Access-Control-Allow-Headers','Content-Type');res.set('Access-Control-Allow-Methods','GET,POST,OPTIONS')}if(req.method==='OPTIONS')return res.sendStatus(204);next()});
+app.get('/api/health',(req,res)=>res.json({service:'cliptext'}));
 app.use(express.json({limit:'16kb'}));
 app.use(express.static(path.join(root,'public')));
 export function run(bin,args,timeout=180000){return new Promise((resolve,reject)=>{const child=spawn(bin,args);let out='',err='';const timer=setTimeout(()=>child.kill('SIGKILL'),timeout);child.stdout.on('data',x=>out=(out+x).slice(-100000));child.stderr.on('data',x=>err=(err+x).slice(-10000));child.on('error',e=>{clearTimeout(timer);reject(e)});child.on('close',code=>{clearTimeout(timer);code===0?resolve(out):reject(new Error(err || 'Processing failed or timed out.'))})})}
