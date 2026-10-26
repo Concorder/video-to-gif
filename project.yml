@@ -1,0 +1,16 @@
+name: ClipText
+options:
+  bundleIdPrefix: com.concorder
+  deploymentTarget:
+    iOS: '17.0'
+targets:
+  ClipText:
+    type: application
+    platform: iOS
+    sources: [App]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.concorder.cliptext
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        SWIFT_VERSION: '5.0'
